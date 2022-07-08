@@ -1,0 +1,30 @@
+- hosts: yandex_cloud_vms
+
+  tasks:
+    - name: install nginx
+      ansible.builtin.apt:
+        name: nginx
+        state: present
+        update_cache: yes
+      become: yes #
+
+    - name: copy index.html file
+      ansible.builtin.copy:
+        src: /home/tolya/yandex_cloud_ansible/files/index.html
+        dest: /usr/share/nginx/html/index.html
+      become: yes #
+
+    - name: copy nginx.conf file
+      ansible.builtin.copy:
+        src: /home/tolya/yandex_cloud_ansible/files/nginx.conf
+        dest: /etc/nginx/nginx.conf
+      notify:
+        - restart nginx
+      become: yes 
+
+  handlers:
+    - name: restart nginx
+      ansible.builtin.service:
+        name: nginx
+        state: reloaded
+      become: yes
